@@ -1,13 +1,28 @@
+void function (TH2D* hist1, TH2D* hist2);
+
+
+
 void twodfig() {
+
+
+	hDataList = {"","","",""}; 
+
+
+
+
+	void function()
+
+}
+
+void function(char* hist1, char* hist2, char* fileName) {
 
 	TFile* fIn = new TFile ("input/fout_corr_pp13TeV.root", "read");
 
 	TH2D* hHM;
 	TH2D* hLM;
 
-	hHM = (TH2D*) fIn->Get("hC_6_0_0_2_11"); 
-
-	hLM = (TH2D*) fIn->Get("hC_0_0_0_4_11"); 
+	hHM = (TH2D*) fIn->Get("hC_6_0_0_2_11");
+	hLM = (TH2D*) fIn->Get("hC_0_0_0_4_11");
 
 	double etalow=1.6;
 	double etahigh=1.8;
@@ -56,5 +71,4 @@ void twodfig() {
 	hDphiLM->Write("hDphiLM_1");
 	hDphiHM->Write("hDphiHM_1");
 	double YM_min = hDphiLM->GetBinContent(hDphiLM->GetBinCenter(0.));
-
 }
