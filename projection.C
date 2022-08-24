@@ -15,6 +15,7 @@
 
 TH2D *h2D[nbins_mult][nbins_pt];
 TH1D *hDeltaphi[nbins_mult][nbins_pt][Negap];
+TH1D *h1D[nbins_mult][nbins_pt][Negap];
 void load2DHistos(TString inputname);
 void makeLongRangeCorr();
 void writeToRoot(TString outname);

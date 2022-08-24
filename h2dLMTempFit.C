@@ -21,7 +21,8 @@
 	when we modify Y_LM non-flow yield with F factor to take into account the relative difference in the two events for non-flow.
 	This way it is possible to extract only the HM flow part by subtracting F*Y_LM (HM non-flow) from the HM yield. 
 */
-
+void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt);
+void h2dLMTempFit();
 
 Double_t Chi2(TH1D *hY_a, TF1 *fFit);
 
@@ -35,8 +36,16 @@ TString errNames[] = {"fit_G_err","fit_V2_err ","fit_V3_err "};
 TString paramNames[] = {"G", "v22", "v33"};
 Int_t NH = 2; // 2-3
 
-void h2dLMTempFit() {
+void h2dLMTempFit(){
 
+ 	// Loading data
+	TFile *fIn = new TFile ("input/fout_long_range_correlation.root", "read");
+	TH1D* hY = (TH1D*) fIn->Get("hDphiHM_1");
+	TH1D* hY_MB = (TH1D*) fIn->Get("hDphiLM_1");
+	h2dLMTempFitOne(hY, hY_MB, 0, 0);
+
+}
+void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	// F factor values
 	Double_t stepsize = (F_max - F_min)/(double) 100;
 	for (int i = 0; i <= numbOfFVar; i++) factorF[i] = F_min + (i*stepsize);
@@ -51,29 +60,7 @@ void h2dLMTempFit() {
 	Double_t params[sizeof(paramNames)];
 	TH1D* hFitTotal;
 
-
-
-
-
-
-
- 	// Loading data
-	TFile *fIn = new TFile ("input/fout_long_range_correlation.root", "read");
-	
-	TH1D* hY = (TH1D*) fIn->Get("hDphiHM_1");
-	TH1D* hY_MB = (TH1D*) fIn->Get("hDphiLM_1");
 	TH1D *hchiq2 = new TH1D("hchiq2","chi2 of fits",100,0,5);
-
-
-
-
-
-
-
-
-
-
-
 
 	//	FIT FUNCTION FOR PARAMETERS
  	string cosine = "[0]*(1";
