@@ -51,7 +51,7 @@ void load2DHistos(TString inputname = "CorrelationsMC2OutAsMC_merged.root"){
 
 	For every TH2D histogram:
 		- We save the [a, 1.8] and [-a, -1.8] gaps into two TH1D histograms using ProjectionY()-function
-			* here variable a is [1.4, 1.7] or [-1.4, -1.7]
+			* here variable a has a value range of [1.4, 1.7] or [-1.4, -1.7]
 		- Then negative eta gap histogram is added to the positive eta gap histogram
 */
 void makeLongRangeCorr() {

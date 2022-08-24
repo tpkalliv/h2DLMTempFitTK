@@ -51,12 +51,29 @@ void h2dLMTempFit() {
 	Double_t params[sizeof(paramNames)];
 	TH1D* hFitTotal;
 
+
+
+
+
+
+
  	// Loading data
 	TFile *fIn = new TFile ("input/fout_long_range_correlation.root", "read");
 	
 	TH1D* hY = (TH1D*) fIn->Get("hDphiHM_1");
 	TH1D* hY_MB = (TH1D*) fIn->Get("hDphiLM_1");
 	TH1D *hchiq2 = new TH1D("hchiq2","chi2 of fits",100,0,5);
+
+
+
+
+
+
+
+
+
+
+
 
 	//	FIT FUNCTION FOR PARAMETERS
  	string cosine = "[0]*(1";
