@@ -29,7 +29,7 @@ Double_t Chi2(TH1D *hY_a, TF1 *fFit);
 
 // Initializations and constants
 
-const int numbOfFVar = 70; // Number of F values
+const int numbOfFVar = 60; // Number of F values
 Double_t factorF[numbOfFVar];
 double F_min = 0.9;
 double F_max = 2;
@@ -86,7 +86,8 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	for (int j = 0; j < numbOfFVar; j++){
 		fFit[j]= new TF1(Form("fFit%d",j), cos, -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0);
 		fFit[j]->SetParameter(0, 1);
-		for (int i = 0; i < NH; i++) fFit[j]->SetParName(i+1, paramNames[i]); 
+		fFit[j]->SetParName(0, paramNames[0]);
+		for (int i = 0; i < NH; i++) fFit[j]->SetParName(i+1, paramNames[i+1]); 
 		for (int i = 0; i < NH; i++) fFit[j]->SetParameter(i+1, TMath::Power(1.0 - (i*0.06),2)); // Initial Vn values are Vn(delta)phi = Vn^2
 	}
 	
@@ -97,7 +98,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
  	for (int j = 0; j < numbOfFVar; j++) {
  		hY_a = (TH1D*) hY->Clone(); 
  		hY_a->Add(hY_MB, -factorF[j]);
- 		hY_a->Fit(fFit[j], "", "", -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0); // Adds 100 diff fits to an array
+ 		hY_a->Fit(fFit[j], "", "QR", -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0); // Adds 100 diff fits to an array
     	chi2all[j] = fFit[j]->GetChisquare() / fFit[j]->GetNDF(); // Chi-square test ( X^2 / NDF ) 
  		hchiq2->Fill(chi2all[j]);		
  		cout << Form("F[%d] = %.2f, chi2=%0.2f",j,factorF[j],chi2all[j]) << endl;
@@ -139,7 +140,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 
 
 	// SAVINGS (Signal, Fit, F*Y_LM+G)
-	TFile *fOut = new TFile (Form("output/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
+	TFile *fOut = new TFile (Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
 	hY->Write("hDphiHM"); // SIGNAL
 	fFit[index]->Write("fFit_best"); 
 	hY_a_G->Write("hY_a_G"); // F*Y_LM+G
@@ -151,7 +152,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	Double_t ScaleFYmin = factorF[index]*Y_LM_min;
 	// Saving vn results to text file
 	fstream file;
-	TString outtextname = Form("output/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
+	TString outtextname = Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
     file.open(outtextname.Data(), ios_base::out);
 
 	for (Int_t n=0; n<NH; n++)
@@ -166,6 +167,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 		fitvn_s[n]->Write();
 	}
 	
+
 	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f",ic, iptt, vn[0], vnError[0], vn[0], vnError[0]);
 	file << texttmp.Data();
 	file.close();

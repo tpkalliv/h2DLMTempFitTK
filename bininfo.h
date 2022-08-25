@@ -20,3 +20,4 @@ double pTMax[nbins_pt] =	{
 
 const int Negap = 4;
 double etamin[Negap] = {1.4,1.5,1.6,1.7};
+double etamax = 1.8;

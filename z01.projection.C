@@ -25,7 +25,7 @@ void projection() {
 	TString inputname = "outResults_junlee/h2DCorrelations_merged_legotrain_EPOSLHC_pp13TeV.root";
 	load2DHistos(inputname);
 	makeLongRangeCorr();
-	TString outname = "output/fout_long_range_correlation_projections_legotrain_EPOSLHC_pp13TeV.root";
+	TString outname = "1.output_projections/fout_long_range_correlation_projections_legotrain_EPOSLHC_pp13TeV.root";
 	writeToRoot(outname);
 
 }
@@ -70,13 +70,15 @@ void makeLongRangeCorr() {
 	} // ic
 }
 
-void writeToRoot(TString outname = "output/fout_long_range_correlation_projections.root") {
+void writeToRoot(TString outname = "1.output_projections/fout_long_range_correlation_projections.root") {
 
 	TFile* fOut = new TFile (outname, "recreate");
+	TString htitle;
 	for (int ic = 0; ic < nbins_mult; ic++){
 		for (int iptt = 0; iptt < nbins_pt; iptt++){
 				for(int ig = 0; ig < Negap; ig++){ 
-
+					htitle = Form("%.0f< N_{ch}<%.0f, %.3f< p_{T} <%.3f, %.1f< |#Delta#eta| <%.1f",Mult_HMT_min[ic],Mult_HMT_max[ic],pTMin[iptt],pTMax[iptt], etamin[ig], etamax);
+					hDeltaphi[ic][iptt][ig]->SetTitle(htitle);
 					hDeltaphi[ic][iptt][ig]->Write(Form("h2dETAG%02dC%02dPTT%02d", ig, ic, iptt));
 
 				} // ig 

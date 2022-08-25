@@ -20,7 +20,7 @@ TH1D *hDeltaphi[nbins_mult][nbins_pt][Negap];
 
 void loadingData() {
 
-	TFile *fIn = new TFile ("output/fout_long_range_correlation_projections.root", "read"); // input file
+	TFile *fIn = new TFile ("1.output_projections/fout_long_range_correlation_projections_legotrain_EPOSLHC_pp13TeV.root", "read"); // input file
 
 	for (int ic = 0; ic < nbins_mult; ic++) {
 		for (int iptt = 0; iptt < nbins_pt; iptt++) {
@@ -38,11 +38,12 @@ void AnaAllCentPtBins() {
 
 	loadingData();
 	int ig = 2;
-	for (int ic = 1; ic < nbins_mult; ic++) {
-		for (int iptt = 0; iptt < nbins_pt; iptt++) {
+	for (int ic = 3; ic < nbins_mult; ic++) {
+		for (int iptt = 2; iptt < 3; iptt++) {
+			cout << "-------------------------------------------------" << endl;
 			cout << Form("ic:%02d_iptt:%02d", ic, iptt) << endl;
 			h2dLMTempFitOne(hDeltaphi[ic][iptt][ig],hDeltaphi[0][iptt][ig], ic, iptt); // ic is multiplicity, NOT PERCENTILE
-			
+			cout << "-------------------------------------------------" << endl;
 		}
 	}
 
