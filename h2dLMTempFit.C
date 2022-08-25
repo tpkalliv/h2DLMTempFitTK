@@ -5,10 +5,11 @@
 #include "TFile.h"
 #include "TString.h"
 #include "TLegend.h"
+#include <iostream>
+#include <fstream>
 
 
 /*
-
 	How this program works:
 
 	Program loads two data sets and finds the best fit for them using Chi2.
@@ -36,6 +37,9 @@ TString errNames[] = {"fit_G_err","fit_V2_err ","fit_V3_err "};
 TString paramNames[] = {"G", "v22", "v33"};
 Int_t NH = 2; // 2-3
 
+//---------------------------------------
+// Test with ALICE data
+//---------------------------------------
 void h2dLMTempFit(){
 
  	// Loading data
@@ -45,6 +49,9 @@ void h2dLMTempFit(){
 	h2dLMTempFitOne(hY, hY_MB, 0, 0);
 
 }
+//---------------------------------------
+// Two inputs : HM and LM-template, need ic and iptt for multiplicity bin and pt bins
+//---------------------------------------
 void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	// F factor values
 	Double_t stepsize = (F_max - F_min)/(double) 100;
@@ -98,14 +105,14 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 
  	Double_t chiq_min = chi2all[0];
  	int index = -1;
-    // search num in inputArray from index 0 to elementCount-1 
-    for (int j = 1; j < numbOfFVar; j++) {
-	    if(chi2all[j] < chiq_min){
-	        chiq_min = chi2all[j];
-            index = j;
-        }
-    }
-    cout << Form("chi2_min=%0.4f, index=%d/%d\n",chi2all[index], index, numbOfFVar);
+	// search num in inputArray from index 0 to elementCount-1 
+	for (int j = 1; j < numbOfFVar; j++) {
+    		if(chi2all[j] < chiq_min){
+        		chiq_min = chi2all[j];
+           		index = j;
+   		}	
+	}	
+	cout << Form("chi2_min=%0.4f, index=%d/%d\n",chi2all[index], index, numbOfFVar);
   
 	params[0] = fFit[index]->GetParameter(0);
 	for (int l = 1; l < NH; l++) params[l] = fFit[index]->GetParameter(l); // Saving Vn^2 values
@@ -132,7 +139,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 
 
 	// SAVINGS (Signal, Fit, F*Y_LM+G)
-	TFile *fOut = new TFile ("output/h2dCorrFit.root", "recreate");
+	TFile *fOut = new TFile (Form("output/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
 	hY->Write("hDphiHM"); // SIGNAL
 	fFit[index]->Write("fFit_best"); 
 	hY_a_G->Write("hY_a_G"); // F*Y_LM+G
@@ -142,16 +149,26 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	// PRODUCING V2 AND V3 HARMONICS AND SAVING 
 	Double_t Y_LM_min = hY_MB->GetMinimum(0);
 	Double_t ScaleFYmin = factorF[index]*Y_LM_min;
+	// Saving vn results to text file
+	fstream file;
+	TString outtextname = Form("output/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
+    file.open(outtextname.Data(), ios_base::out);
+
 	for (Int_t n=0; n<NH; n++)
 	{
 		TString formula = Form("[0]*(1 + 2*[1]*TMath::Cos(%d*x)) + [2]",n+2);					
 		fitvn_s[n]= new TF1(Form("fit_s_v%d", n+2),formula, -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0);
-		vn[n] = fFit[index]->GetParameter(1);																
+		vn[n] = fFit[index]->GetParameter(1);
+		vnError[n] = fFit[index]->GetParError(1);															
 		fitvn_s[n]->SetParameter(1, vn[n]);
 		fitvn_s[n]->SetParameter(0, params[0]);
 		fitvn_s[n]->SetParameter(2, ScaleFYmin);
 		fitvn_s[n]->Write();
 	}
+	
+	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f",ic, iptt, vn[0], vnError[0], vn[0], vnError[0]);
+	file << texttmp.Data();
+	file.close();
 
 	TCanvas *c2 = new TCanvas ("hFit", "hHM", 1);
 	hY->SetMinimum(hY->GetMinimum()*0.98);
