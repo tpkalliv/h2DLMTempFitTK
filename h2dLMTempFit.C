@@ -29,7 +29,7 @@ Double_t Chi2(TH1D *hY_a, TF1 *fFit);
 
 // Initializations and constants
 
-const int numbOfFVar = 100; // Number of F values
+const int numbOfFVar = 70; // Number of F values
 Double_t factorF[numbOfFVar];
 double F_min = 0.9;
 double F_max = 2;

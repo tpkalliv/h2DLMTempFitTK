@@ -22,16 +22,16 @@ void writeToRoot(TString outname);
 // Program starts here
 void projection() {
 
-	TString inputname = "outResults_junlee/CorrelationsMC2OutAsMC_merged.root";
+	TString inputname = "outResults_junlee/h2DCorrelations_merged_legotrain_EPOSLHC_pp13TeV.root";
 	load2DHistos(inputname);
 	makeLongRangeCorr();
-	TString outname = "output/fout_long_range_correlation_projections.root";
+	TString outname = "output/fout_long_range_correlation_projections_legotrain_EPOSLHC_pp13TeV.root";
 	writeToRoot(outname);
 
 }
 
 // How this function works
-void load2DHistos(TString inputname = "CorrelationsMC2OutAsMC_merged.root"){
+void load2DHistos(TString inputname = "outResults_junlee/h2DCorrelations_merged_legotrain_EPOSLHC_pp13TeV.root"){
 
 	TFile *fIn = new TFile (inputname, "read"); // input file
 
