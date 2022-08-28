@@ -18,6 +18,8 @@ double pTMax[nbins_pt] =	{
 1.0, 2.0, 3.0, 4.0, 3.0
 };
 
+const int NH = 2; // 2-3
+
 const int Negap = 4;
 double etamin[Negap] = {1.4,1.5,1.6,1.7};
 double etamax = 1.8;

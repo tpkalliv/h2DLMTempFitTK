@@ -35,7 +35,6 @@ double F_min = 0.9;
 double F_max = 2;
 TString errNames[] = {"fit_G_err","fit_V2_err ","fit_V3_err "};
 TString paramNames[] = {"G", "v22", "v33"};
-Int_t NH = 2; // 2-3
 
 //---------------------------------------
 // Test with ALICE data
@@ -168,7 +167,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	}
 	
 
-	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f",ic, iptt, vn[0], vnError[0], vn[0], vnError[0]);
+	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f\n",ic, iptt, vn[0], vnError[0], vn[1], vnError[1]);
 	file << texttmp.Data();
 	file.close();
 
