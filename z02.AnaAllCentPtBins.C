@@ -1,4 +1,4 @@
-#include "bininfo.h"
+//#include "bininfo.h"
 #include "h2dLMTempFit.C"
 #include <TFile.h>
 #include <TH2D.h>
@@ -16,6 +16,7 @@
 
 TH1D *hDeltaphi[nbins_mult][nbins_pt][Negap];
 
+// 
 
 
 void loadingData() {
@@ -38,8 +39,8 @@ void AnaAllCentPtBins() {
 
 	loadingData();
 	int ig = 2;
-	for (int ic = 3; ic < nbins_mult; ic++) {
-		for (int iptt = 2; iptt < 3; iptt++) {
+	for (int ic = 0; ic < nbins_mult; ic++) {
+		for (int iptt = 0; iptt < nbins_pt; iptt++) {
 			cout << "-------------------------------------------------" << endl;
 			cout << Form("ic:%02d_iptt:%02d", ic, iptt) << endl;
 			h2dLMTempFitOne(hDeltaphi[ic][iptt][ig],hDeltaphi[0][iptt][ig], ic, iptt); // ic is multiplicity, NOT PERCENTILE

@@ -7,6 +7,7 @@
 #include "TLegend.h"
 #include <iostream>
 #include <fstream>
+#include "bininfo.h"
 
 
 /*
@@ -35,7 +36,6 @@ double F_min = 0.9;
 double F_max = 2;
 TString errNames[] = {"fit_G_err","fit_V2_err ","fit_V3_err "};
 TString paramNames[] = {"G", "v22", "v33"};
-Int_t NH = 2; // 2-3
 
 //---------------------------------------
 // Test with ALICE data
@@ -142,7 +142,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 
 
 	// SAVINGS (Signal, Fit, F*Y_LM+G)
-	TFile *fOut = new TFile (Form("output/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
+	TFile *fOut = new TFile (Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
 	hY->Write("hDphiHM"); // SIGNAL
 	fBestFit->Write("fFit_best"); 
 	hY_a_G->Write("hY_a_G"); // F*Y_LM+G
@@ -154,22 +154,22 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	Double_t ScaleFYmin = factorF[index]*Y_LM_min;
 	// Saving vn results to text file
 	fstream file;
-	TString outtextname = Form("output/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
+	TString outtextname = Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
     file.open(outtextname.Data(), ios_base::out);
 
 	for (Int_t n=0; n<NH; n++)
 	{
 		TString formula = Form("[0]*(1 + 2*[1]*TMath::Cos(%d*x)) + [2]",n+2);					
 		fitvn_s[n]= new TF1(Form("fit_s_v%d", n+2),formula, -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0);
-		vn[n] = fFit[index]->GetParameter(1);
-		vnError[n] = fFit[index]->GetParError(1);															
+		vn[n] = fFit[index]->GetParameter(n+1); // v2 v3 correctly
+		vnError[n] = fFit[index]->GetParError(n+1);															
 		fitvn_s[n]->SetParameter(1, vn[n]);
 		fitvn_s[n]->SetParameter(0, params[0]);
 		fitvn_s[n]->SetParameter(2, ScaleFYmin);
 		fitvn_s[n]->Write();
 	}
 	
-	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f",ic, iptt, vn[0], vnError[0], vn[0], vnError[0]);
+	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f\n",ic, iptt, vn[0], vnError[0], vn[1], vnError[1]);
 	file << texttmp.Data();
 	file.close();
 
