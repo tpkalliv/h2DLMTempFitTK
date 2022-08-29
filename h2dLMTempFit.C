@@ -29,12 +29,13 @@ Double_t Chi2(TH1D *hY_a, TF1 *fFit);
 
 // Initializations and constants
 
-const int numbOfFVar = 60; // Number of F values
+const int numbOfFVar = 500; // Number of F values
 Double_t factorF[numbOfFVar];
 double F_min = 0.9;
 double F_max = 2;
 TString errNames[] = {"fit_G_err","fit_V2_err ","fit_V3_err "};
 TString paramNames[] = {"G", "v22", "v33"};
+Int_t NH = 2; // 2-3
 
 //---------------------------------------
 // Test with ALICE data
@@ -53,20 +54,21 @@ void h2dLMTempFit(){
 //---------------------------------------
 void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	// F factor values
-	Double_t stepsize = (F_max - F_min)/(double) 100;
+	Double_t stepsize = (F_max - F_min)/(double) numbOfFVar;
 	for (int i = 0; i <= numbOfFVar; i++) factorF[i] = F_min + (i*stepsize);
-	cout << Form("%.2f<F<%.2f, NF= %d, step=%.2f\n",F_min,F_max,numbOfFVar,stepsize) << endl;
+	cout << Form("%.2f<F<%.2f, NF=%d, step=%.4f\n",F_min,F_max,numbOfFVar,stepsize) << endl;
 
  	TH1D* hY_a;
- 	Double_t chi2all[numbOfFVar];
+ 	Double_t chi2val;
 	TF1 *fitvn_s[NH];
 	TH1D* hY_a_G;
 	Double_t vn[NH];
 	Double_t vnError[NH];
-	Double_t params[sizeof(paramNames)];
+	Double_t params[sizeof(paramNames)/sizeof(*paramNames)]; // Reserve an array of same size as paramNames
 	TH1D* hFitTotal;
 
-	TH1D *hchiq2 = new TH1D("hchiq2","chi2 of fits",100,0,5);
+
+	TH1D *hchiq2 = new TH1D("hchiq2","chi2 of fits",numbOfFVar,0,5);
 
 	//	FIT FUNCTION FOR PARAMETERS
  	string cosine = "[0]*(1";
@@ -81,41 +83,42 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	const char* cos = cosine.c_str();
   
 
-	TF1* fFit[sizeof(paramNames)]; // Array for diff fit functions
-	for (int j = 0; j < numbOfFVar; j++){
+	TF1* fFit[numbOfFVar]; // Array for diff fit functions, size is numbOfFVar
+
+ 	Double_t chiq_min = -1.;
+ 	int index = -1;
+
+	for (int j = 0; j < numbOfFVar; j++){ 
 		fFit[j]= new TF1(Form("fFit%d",j), cos, -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0);
 		fFit[j]->SetParameter(0, 1);
-		fFit[j]->SetParName(0, paramNames[0]);
-		for (int i = 0; i < NH; i++) fFit[j]->SetParName(i+1, paramNames[i+1]); 
+		for (int i = 0; i < NH; i++) fFit[j]->SetParName(i+1, paramNames[i]); 
 		for (int i = 0; i < NH; i++) fFit[j]->SetParameter(i+1, TMath::Power(1.0 - (i*0.06),2)); // Initial Vn values are Vn(delta)phi = Vn^2
-	}
-	
-	// Fit with a given F
-	Double_t min_val = -999;
 
-	// PARAMETER EXTRACTION
- 	for (int j = 0; j < numbOfFVar; j++) {
+ 		chi2val = 0;
  		hY_a = (TH1D*) hY->Clone(); 
  		hY_a->Add(hY_MB, -factorF[j]);
- 		hY_a->Fit(fFit[j], "", "QR", -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0); // Adds 100 diff fits to an array
-    	chi2all[j] = fFit[j]->GetChisquare() / fFit[j]->GetNDF(); // Chi-square test ( X^2 / NDF ) 
- 		hchiq2->Fill(chi2all[j]);		
- 		cout << Form("F[%d] = %.2f, chi2=%0.2f",j,factorF[j],chi2all[j]) << endl;
- 	}
 
- 	Double_t chiq_min = chi2all[0];
- 	int index = -1;
-	// search num in inputArray from index 0 to elementCount-1 
-	for (int j = 1; j < numbOfFVar; j++) {
-    		if(chi2all[j] < chiq_min){
-        		chiq_min = chi2all[j];
-           		index = j;
+ 		// Fit options: Q = don't print, N = don't draw  
+ 		hY_a->Fit(fFit[j], "QN", "", -TMath::Pi()/2.0, 3.0*TMath::Pi()/2.0); // Adds numbOfFVar diff fits to an array
+    	chi2val = fFit[j]->GetChisquare() / fFit[j]->GetNDF(); // Chi-square test ( X^2 / NDF ) 
+ 		hchiq2->Fill(chi2val);		
+ 		cout << Form("F[%d] = %.4f, chi2=%0.4f",j,factorF[j],chi2val) << endl;
+
+   		if(chi2val < chiq_min || chiq_min < 0.){
+        	chiq_min = chi2val;
+        	index = j;
    		}	
-	}	
-	cout << Form("chi2_min=%0.4f, index=%d/%d\n",chi2all[index], index, numbOfFVar);
+	}
+
+	cout << Form("F value=%.4f, chi2_min=%0.4f, index=%d/%d\n",factorF[index], chiq_min, index, numbOfFVar)<< endl;
+
+	TF1* fBestFit = (TF1*) fFit[index]->Clone();
+
+	delete *fFit;
+	delete hY_a;
   
-	params[0] = fFit[index]->GetParameter(0);
-	for (int l = 1; l < NH; l++) params[l] = fFit[index]->GetParameter(l); // Saving Vn^2 values
+	params[0] = fBestFit->GetParameter(0);
+	for (int l = 1; l < NH; l++) params[l] = fBestFit->GetParameter(l); // Saving Vn^2 values
 
     cout << "Saving results in to the ROOT file" << endl;
 
@@ -124,7 +127,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
  	{
  		Double_t ylm = hY_MB->GetBinContent(k); // Taking k'th bin value
  		Double_t x = hY_MB->GetXaxis()->GetBinCenter(k);
- 		Double_t tot =  fFit[index]->Eval(x) + (factorF[index]*ylm); // Adding all up
+ 		Double_t tot =  fBestFit->Eval(x) + (factorF[index]*ylm); // Adding all up
  		hFitTotal->SetBinContent(k, tot);
  	}
 
@@ -139,9 +142,9 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 
 
 	// SAVINGS (Signal, Fit, F*Y_LM+G)
-	TFile *fOut = new TFile (Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
+	TFile *fOut = new TFile (Form("output/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
 	hY->Write("hDphiHM"); // SIGNAL
-	fFit[index]->Write("fFit_best"); 
+	fBestFit->Write("fFit_best"); 
 	hY_a_G->Write("hY_a_G"); // F*Y_LM+G
 	hFitTotal->Write("hFitTotal");
 	hchiq2->Write();
@@ -151,7 +154,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	Double_t ScaleFYmin = factorF[index]*Y_LM_min;
 	// Saving vn results to text file
 	fstream file;
-	TString outtextname = Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
+	TString outtextname = Form("output/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
     file.open(outtextname.Data(), ios_base::out);
 
 	for (Int_t n=0; n<NH; n++)
@@ -166,8 +169,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 		fitvn_s[n]->Write();
 	}
 	
-
-	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f\n",ic, iptt, vn[0], vnError[0], vn[1], vnError[1]);
+	TString texttmp = Form("%d %d %.5f %.5f %.5f %.5f",ic, iptt, vn[0], vnError[0], vn[0], vnError[0]);
 	file << texttmp.Data();
 	file.close();
 
@@ -180,6 +182,8 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	fitvn_s[1]->Draw("same");
 	hFitTotal->SetLineColor(4);
 	hFitTotal->Draw("same");
+
+	//gROOT->ProcessLine("TBrowser r"); // Opens TBrowser when done
 	
 } // PROGRAM ENDS HERE
 
