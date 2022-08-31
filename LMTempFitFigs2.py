@@ -39,7 +39,7 @@ rlimits = [(0.99,1.01)];
 
 
 histnames = ["hDphiHM","hFitTotal","hY_a_G", "fit_s_v2","fit_s_v3" ];
-
+#ls 2.output_LMfits/*.root | awk '{com=sprinf("python3 LMTempFitFigs2.py %s",$1); print(com)}'
 # add here the histogram names for each pad
 # add labels for each pad
 plables = [ ""
@@ -119,4 +119,4 @@ plot.Plot();
 
 
 plot.Save(outfigname);
-plot.Show();
+#plot.Show();
