@@ -1,7 +1,8 @@
 import sys
 import os
-
-
+# one can do it with the following in the command line but we are here to do it in python
+# ls 2.output_LMfits/*.root > LMfits.list
+# cat LMfits.list | awk '{com=sprintf("python3 LMTempFitFigs2.py %s",$1); print(com)}' | sh
 filelist = sys.argv[1];
 
 # Using readlines()
