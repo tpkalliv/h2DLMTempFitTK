@@ -50,6 +50,7 @@ void makegraphs() {
     ifstream infile("out_LMtemplate_allbins.txt");
     cout <<"making graphs..." << endl;
     int i = 0;
+    int ig = 0;
     int ic= 0;
     int ipt=0;
     double v2, v2_err;
@@ -57,16 +58,16 @@ void makegraphs() {
     while (1) {
             if(!infile.good()) break;
 
-            infile >>  ic >> ipt >> v2 >> v2_err >> v3>> v3_err;
-            cout << Form("%d %d %.5f %.5f %.5f %.5f\n", ic, ipt ,v2 , v2_err , v3, v3_err);
-            grVnCentDep[0][ipt][0]->SetPoint(ic, xnch[ic] , v2);
-            grVnCentDep[0][ipt][0]->SetPointError(ic, 0, v2_err);
-            grVnCentDep[1][ipt][0]->SetPoint(ic, xnch[ic] , v3);
-            grVnCentDep[1][ipt][0]->SetPointError(ic, 0, v3_err);
-            grVnpTDep[0][ic][0]->SetPoint(ipt, xpt[ipt] , v2);
-            grVnpTDep[0][ic][0]->SetPointError(ipt, 0 , v2_err);
-            grVnpTDep[1][ic][0]->SetPoint(ipt, xpt[ipt] , v3);
-            grVnpTDep[1][ic][0]->SetPointError(ipt, 0 , v3_err);
+            infile >>  ig >> ic >> ipt >> v2 >> v2_err >> v3>> v3_err;
+            cout << Form("%d %d %d %.5f %.5f %.5f %.5f\n", ig, ic, ipt ,v2 , v2_err , v3, v3_err);
+            grVnCentDep[0][ipt][ig]->SetPoint(ic, xnch[ic] , v2);
+            grVnCentDep[0][ipt][ig]->SetPointError(ic, 0, v2_err);
+            grVnCentDep[1][ipt][ig]->SetPoint(ic, xnch[ic] , v3);
+            grVnCentDep[1][ipt][ig]->SetPointError(ic, 0, v3_err);
+            grVnpTDep[0][ic][ig]->SetPoint(ipt, xpt[ipt] , v2);
+            grVnpTDep[0][ic][ig]->SetPointError(ipt, 0 , v2_err);
+            grVnpTDep[1][ic][ig]->SetPoint(ipt, xpt[ipt] , v3);
+            grVnpTDep[1][ic][ig]->SetPointError(ipt, 0 , v3_err);
             i++;
     }
     cout << "Number of lines = " << i << endl;
@@ -83,6 +84,8 @@ void writegraphsToroot() {
 		for (int ig = 0; ig < Negap; ig++) {
 			for (int iptt = 0; iptt < nbins_pt; iptt++) {
 				TString grname = Form("grVnCentDepH%02dG%02dPTT%02d",ih, ig, iptt);
+				TString gtitle = Form("$%.1f <  p_\\mathrm{T} < %.1f~(\\mathrm{GeV}/c)$",pTMin[iptt], pTMax[iptt]);
+				grVnCentDep[ih][iptt][ig]->SetTitle(gtitle);
 				if(grVnCentDep[ih][iptt][ig]) grVnCentDep[ih][iptt][ig]->Write(grname);
             } // iptt	
 		} // ig
