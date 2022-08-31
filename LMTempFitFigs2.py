@@ -17,7 +17,7 @@ For figs
 file = sys.argv[1];
 # data set is manual
 datatitle = "EPOS LHC" 
-outfigname = file.replace(".root","_fit.pdf")
+outfigname = file.replace(".root","_fit.png")
 
 f = ROOT.TFile(file,"read");
 dataTypePlotParams = [
