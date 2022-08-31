@@ -15,6 +15,9 @@ For figs
 '''
 
 file = sys.argv[1];
+# data set is manual
+datatitle = "EPOS LHC" 
+outfigname = file.replace(".root","_fit.pdf")
 
 f = ROOT.TFile(file,"read");
 dataTypePlotParams = [
@@ -56,8 +59,19 @@ ytitle = ["$\\frac{1}{N_{\\mathrm{trig}}}\\frac{\\mathrm{d}N^{\\mathrm{pair}}}{\
 
 # Following two must be added
 toptitle = "pp $\\sqrt{s}$ = 13 TeV"; # need to add on the top
-dataDetail = ["$1 < p_\\mathrm{T,trig(assoc)} < 2 \\,\\mathrm{GeV}/c$"];
-dataDetailEta = ["$1.6 < |\\Delta\\eta| < 1.8$"];
+
+
+# getting result informations
+# htitle =  15< N_{ch}<35, 4.000< p_{T} <6.000, 1.6< |#Delta#eta| <1.8
+hist = f.Get("hDphiHM")
+htitle = hist.GetTitle()
+print("htitle = ", htitle)
+hinfo = htitle.split(",")
+TypeName[0] = "$"+hinfo[0]+"$"
+hinfo[1] = hinfo[1].replace(".000",".0")
+dataDetail = "$"+hinfo[1]+" (\\mathrm{GeV}/c)$"
+hinfo[2] = hinfo[2].replace("#","\\")
+dataDetailEta = "$"+hinfo[2]+"$"
 
 
 plot = JPyPlotRatio.JPyPlotRatio(panels=(nrow,ncol),
@@ -94,17 +108,15 @@ for d in range(0,5):
 
 f.Close();
 
-plot.GetPlot().text(0.38,0.83,"ALICE",fontsize=11);
+plot.GetPlot().text(0.38,0.83,datatitle,fontsize=11);
 plot.GetPlot().text(0.38,0.79,toptitle,fontsize=11);
-plot.GetPlot().text(0.38,0.75,"$1 < p_\\mathrm{T,trig} < 2 \\,\\mathrm{GeV}/c$",fontsize=11);
-plot.GetPlot().text(0.38,0.71,"$1 < p_\\mathrm{T,assoc} < 2 \\,\\mathrm{GeV}/c$",fontsize=11);
-plot.GetPlot().text(0.38,0.67,"$1.6 < |\\Delta\\eta| < 1.8$",fontsize=10);
+plot.GetPlot().text(0.38,0.75,dataDetail,fontsize=11);
+plot.GetPlot().text(0.38,0.71,dataDetailEta,fontsize=11);
 plot.GetRatioAxes(0).xaxis.set_ticks_position('both');
 plot.GetRatioAxes(0).yaxis.set_ticks_position('both');
 #plot.GetAxes(0).xticks(rotation=45)
 plot.Plot();
 
 
-plot.Save("figs/Fig1_FlowExt.pdf");
-plot.Save("figs/Fig1_FlowExt.png");
+plot.Save(outfigname);
 plot.Show();
