@@ -1,0 +1,13 @@
+import sys
+
+filelist = sys.argv[1];
+
+# Using readlines()
+file = open(filelist, 'r')
+Lines = file.readlines()
+  
+count = 0
+# Strips the newline character
+for line in Lines:
+    count += 1
+    print("Line{}: {}".format(count, line.strip()))
