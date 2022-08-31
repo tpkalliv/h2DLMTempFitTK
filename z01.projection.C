@@ -55,15 +55,14 @@ void load2DHistos(TString inputname = "outResults_junlee/h2DCorrelations_merged_
 		- Then negative eta gap histogram is added to the positive eta gap histogram
 */
 void makeLongRangeCorr() {
-	double etahigh = 1.8; // constant
 	// Creating projections for every variation of histogram
 	for (int ic = 0; ic < nbins_mult; ic++){
 		for (int iptt = 0; iptt < nbins_pt; iptt++){
 				for(int ig = 0; ig < Negap; ig++){ 
 					// Positive eta gap
-					hDeltaphi[ic][iptt][ig] = (TH1D*) h2D[ic][iptt]->ProjectionX(Form("h2dETAG%02dC%02dPTT%02d", ig, ic, iptt), h2D[ic][iptt]->GetYaxis()->FindBin(etahigh), h2D[ic][iptt]->GetYaxis()->FindBin(etamin[ig]));
+					hDeltaphi[ic][iptt][ig] = (TH1D*) h2D[ic][iptt]->ProjectionX(Form("h2dETAG%02dC%02dPTT%02d", ig, ic, iptt), h2D[ic][iptt]->GetYaxis()->FindBin(etamax), h2D[ic][iptt]->GetYaxis()->FindBin(etamin[ig]));
 					// Negative eta gap gets added to pos eta gap histos
-					TH1D *hTemp =             (TH1D*) h2D[ic][iptt]->ProjectionX(Form("h2dETAG%02dC%02dPTT%02d", ig, ic, iptt), h2D[ic][iptt]->GetYaxis()->FindBin(-etahigh), h2D[ic][iptt]->GetYaxis()->FindBin(-etamin[ig]));
+					TH1D *hTemp =             (TH1D*) h2D[ic][iptt]->ProjectionX(Form("h2dETAG%02dC%02dPTT%02d", ig, ic, iptt), h2D[ic][iptt]->GetYaxis()->FindBin(-etamax), h2D[ic][iptt]->GetYaxis()->FindBin(-etamin[ig]));
 					hDeltaphi[ic][iptt][ig]->Add(hTemp, 1);
 				} // ig pos
 		} // iptt

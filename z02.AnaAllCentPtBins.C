@@ -38,13 +38,14 @@ void loadingData() {
 void AnaAllCentPtBins() {
 
 	loadingData();
-	int ig = 2;
-	for (int ic = 0; ic < nbins_mult; ic++) {
-		for (int iptt = 0; iptt < nbins_pt; iptt++) {
-			cout << "-------------------------------------------------" << endl;
-			cout << Form("ic:%02d_iptt:%02d", ic, iptt) << endl;
-			h2dLMTempFitOne(hDeltaphi[ic][iptt][ig],hDeltaphi[0][iptt][ig], ic, iptt); // ic is multiplicity, NOT PERCENTILE
-			cout << "-------------------------------------------------" << endl;
+	for (int ig = 0; ig < Negap; ig++) {
+		for (int ic = 0; ic < nbins_mult; ic++) {
+			for (int iptt = 0; iptt < nbins_pt; iptt++) {
+				cout << "-------------------------------------------------" << endl;
+				cout << Form("ic:%02d_iptt:%02d", ic, iptt) << endl;
+				h2dLMTempFitOne(hDeltaphi[ic][iptt][ig],hDeltaphi[0][iptt][ig], ic, iptt, ig); // ic is multiplicity, NOT PERCENTILE
+				cout << "-------------------------------------------------" << endl;
+			}
 		}
 	}
 

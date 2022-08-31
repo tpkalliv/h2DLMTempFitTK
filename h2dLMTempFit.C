@@ -23,7 +23,7 @@
 	when we modify Y_LM non-flow yield with F factor to take into account the relative difference in the two events for non-flow.
 	This way it is possible to extract only the HM flow part by subtracting F*Y_LM (HM non-flow) from the HM yield. 
 */
-void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt);
+void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt, int ig);
 void h2dLMTempFit();
 
 Double_t Chi2(TH1D *hY_a, TF1 *fFit);
@@ -46,13 +46,13 @@ void h2dLMTempFit(){
 	TFile *fIn = new TFile ("input/fout_long_range_correlation.root", "read");
 	TH1D* hY = (TH1D*) fIn->Get("hDphiHM_1");
 	TH1D* hY_MB = (TH1D*) fIn->Get("hDphiLM_1");
-	h2dLMTempFitOne(hY, hY_MB, 0, 0);
+	h2dLMTempFitOne(hY, hY_MB, 0, 0, 0);
 
 }
 //---------------------------------------
 // Two inputs : HM and LM-template, need ic and iptt for multiplicity bin and pt bins
 //---------------------------------------
-void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
+void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt, int ig) {
 	// F factor values
 	Double_t stepsize = (F_max - F_min)/(double) numbOfFVar;
 	for (int i = 0; i <= numbOfFVar; i++) factorF[i] = F_min + (i*stepsize);
@@ -141,20 +141,23 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt) {
 	hY_a_G->SetMarkerStyle(24);
 
 
+
 	// SAVINGS (Signal, Fit, F*Y_LM+G)
-	TFile *fOut = new TFile (Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.root",ic,iptt), "recreate");
+	TFile *fOut = new TFile (Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02dETAG%02d.root",ic,iptt, ig), "recreate");
 	hY->Write("hDphiHM"); // SIGNAL
 	fBestFit->Write("fFit_best"); 
 	hY_a_G->Write("hY_a_G"); // F*Y_LM+G
 	hFitTotal->Write("hFitTotal");
 	hchiq2->Write();
+	TString strF = Form("%.2f",factorF[index]);
+	//strF->Write();
 
 	// PRODUCING V2 AND V3 HARMONICS AND SAVING 
 	Double_t Y_LM_min = hY_MB->GetMinimum(0);
 	Double_t ScaleFYmin = factorF[index]*Y_LM_min;
 	// Saving vn results to text file
 	fstream file;
-	TString outtextname = Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02d.txt",ic,iptt);
+	TString outtextname = Form("2.output_LMfits/out_LMtemplate_C%02dPTT%02dETAG%02d.txt",ic,iptt, ig);
     file.open(outtextname.Data(), ios_base::out);
 
 	for (Int_t n=0; n<NH; n++)
