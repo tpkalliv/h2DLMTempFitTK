@@ -14,13 +14,15 @@ import JPyPlotRatio
 f = ROOT.TFile("out_LMtemplate_allbins.root","read");
 
 #grVnCentDepH%02dG%02dPTT%02d",ih, ig, iptt
-obsTypeStr  = ["grVnCentDepH00G00PTT02","grVnCentDepH00G00PTT03",
-		"grVnCentDepH00G00PTT04","grVnCentDepH00G00PTT05"
+obsTypeStr  = ["grVnCentDepH00G00PTT02","grVnCentDepH00G00PTT03", # v2
+	       "grVnCentDepH01G00PTT02","grVnCentDepH01G00PTT03" # v3
 		];
 
 obsTypeStrEta1  = ["grVnCentDepH00G01PTT02","grVnCentDepH00G01PTT03",
-		"grVnCentDepH00G01PTT04","grVnCentDepH00G01PTT05"
+		   "grVnCentDepH01G01PTT02","grVnCentDepH01G01PTT03"
 		];
+
+labelStr = ["$1.6 < |\\Delta\\eta| < 2.0$","$1.8 < |\\Delta\\eta| < 2.0$"]
 obsN = len(obsTypeStr);
 plabel = ["" for x in range(obsN)]
 for i in range(0,obsN):
@@ -29,7 +31,7 @@ for i in range(0,obsN):
 	print(plabel[i])		
 
 print(plabel)
-dataTypeStr = ["EPOS"];
+dataTypeStr = ["EPOS LHC"];
 dataTypePlotParams = [
         {'plotType':'data','color':'red','fmt':'o','markersize':5.0},
         {'plotType':'data','color':'#e580ff','fmt':'X','fillstyle':'none','markersize':5.5},
@@ -48,38 +50,33 @@ def RemovePoints(arrays, pointIndices):
 # define panel/xaxis limits/titles
 ny = 2;
 nx = 2;
-xlimits = [(0,120.)];
-ylimits = [(0,0.05),(0.,0.05)];
+xlimits = [(71,110.)];
+ylimits = [(0.,0.02),(-0.001,0.0032)];
 
 
-xtitle = ["$N_ch$"];
-ytitle = ["$v_n$","$v_n$"];
-ytitleRight = ["$v_n$"];
+xtitle = ["$N_{ch}$"];
+ytitle = ["$v_2$","$v_3$"];
 # Following two must be added
 toptitle = "pp $\\sqrt{s}$ = 13 TeV"; # need to add on the top
 #dataDetail = "$0.2 < p_\\mathrm{T} < 5.0\\,\\mathrm{GeV}/c$\n$|\\eta| < 0.8$";
 
 plot = JPyPlotRatio.JPyPlotRatio(panels=(ny,nx),panelsize=(5,5),
 	disableRatio=[0,1],
-#	rowBounds=ylimits, #only one row, add the shared ylims
+	rowBounds=ylimits, #only one row, add the shared ylims
 	colBounds={0:xlimits[0],1:xlimits[0]}, #two columns, set xlimit for both of them
 	ratioBounds={0:(-1,3),1:(-1,3)},
 	#panelLabel={i:label for i,label in enumerate(plabel)},
-	panelLabelLoc=(0.07,0.88),panelLabelSize=11,
+	panelLabelLoc=(0.5,0.88),panelLabelSize=11,
 	panelLabel=plabel,
 	#panelScaling={3:5},
 	panelLabelAlign="left",
 	systPatchWidth = 0.03,
-	legendPanel=0,legendLoc=(0.70,0.26),legendSize=9,ylabel={0:ytitle[0],1:ytitle[1]});
+	legendPanel=0,legendLoc=(0.70,0.7),legendSize=10,ylabel={0:ytitle[0],1:ytitle[1]});
 plot.GetPlot().text(0.5,0.05,xtitle[0],size=plot.axisLabelSize,horizontalalignment="center");
-plot.GetAxes(1).yaxis.tick_right();
-plot.GetAxes(3).yaxis.tick_right();
-
-#plot.EnableLatex(True);
-
 
 
 #plot.EnableLatex(True);
+
 
 
 #scale1 = {4:10,5:10};
@@ -93,9 +90,8 @@ plot.GetAxes(3).plot([0,50],[0,0],linestyle=":",color="gray");
 for i in range(0,obsN):
 	gr = f.Get("{}".format(obsTypeStr[i]));
 	grEta1 = f.Get("{}".format(obsTypeStrEta1[i]));
-	grEta1.Print()
-	plot1 = plot.Add(i,gr,**dataTypePlotParams[0]);
-	plot1 = plot.Add(i,grEta1,**dataTypePlotParams[1]);
+	plot1 = plot.Add(i,gr,**dataTypePlotParams[0],label=labelStr[0]);
+	plot1 = plot.Add(i,grEta1,**dataTypePlotParams[1],label=labelStr[1]);
 	#plot.Ratio(plotModel,plot1);
 
 f.Close();
@@ -103,8 +99,8 @@ f.Close();
 
 
 
-plot.GetPlot().text(0.34,0.75,toptitle,fontsize=9);
-
+plot.GetPlot().text(0.15,0.8,toptitle,fontsize=10);
+plot.GetPlot().text(0.15,0.77,dataTypeStr,fontsize=10)
 
 plot.Plot();
 plot.Show();
