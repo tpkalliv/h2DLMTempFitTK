@@ -95,6 +95,8 @@ void writegraphsToroot() {
 		for (int ig = 0; ig < Negap; ig++) {
 			for (int ic = 0; ic < nbins_mult; ic++) {
 				TString grname = Form("grVnpTDepC%02dH%02dG%02d",ic, ih, ig);
+				TString gtitle = Form("$%.0f <  N_{ch} < %.0f$",Mult_HMT_min[ic], Mult_HMT_max[ic]);
+				grVnpTDep[ih][ic][ig]->SetTitle(gtitle);
 				if(grVnpTDep[ih][ic][ig]) grVnpTDep[ih][ic][ig]->Write(grname);
             } // ic	
 		} // ig
