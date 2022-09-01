@@ -14,18 +14,19 @@ import JPyPlotRatio
 f = ROOT.TFile("out_LMtemplate_allbins.root","read");
 
 #grVnCentDepH%02dG%02dPTT%02d",ih, ig, iptt
-obsTypeStr  = ["grVnCentDepH00G00PTT02","grVnCentDepH00G00PTT03",
-		"grVnCentDepH00G00PTT04","grVnCentDepH00G00PTT05"
+obsTypeStr  = ["grVnpTDepC00H00G00","grVnpTDepC02H00G00",
+		"grVnpTDepC04H00G00","grVnpTDepC00H00G01"
 		];
 
-obsTypeStrEta1  = ["grVnCentDepH00G01PTT02","grVnCentDepH00G01PTT03",
-		"grVnCentDepH00G01PTT04","grVnCentDepH00G01PTT05"
+obsTypeStrEta1  = ["grVnpTDepC01H00G00","grVnpTDepC03H00G00",
+		"grVnpTDepC05H00G00","grVnpTDepC01H00G01"
 		];
 obsN = len(obsTypeStr);
 plabel = ["" for x in range(obsN)]
 for i in range(0,obsN):
 	gr = f.Get("{}".format(obsTypeStr[i]));
 	plabel[i] = "{}".format(gr.GetTitle());
+	print(i)
 	print(plabel[i])		
 
 print(plabel)
@@ -48,11 +49,11 @@ def RemovePoints(arrays, pointIndices):
 # define panel/xaxis limits/titles
 ny = 2;
 nx = 2;
-xlimits = [(0,120.)];
+xlimits = [(0,3.)];
 ylimits = [(0,0.05),(0.,0.05)];
 
 
-xtitle = ["$N_ch$"];
+xtitle = ["$pT$"];
 ytitle = ["$v_n$","$v_n$"];
 ytitleRight = ["$v_n$"];
 # Following two must be added
@@ -111,4 +112,4 @@ plot.Show();
 
 #plot.GetRatioAxes(3).remove();
 
-plot.Save("figs/VnCentDep.pdf");
+plot.Save("figs/VnPtDep.pdf");
