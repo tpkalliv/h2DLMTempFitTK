@@ -1,20 +1,7 @@
-void function (TH2D* hist1, TH2D* hist2);
 
 
 
 void twodfig() {
-
-
-	hDataList = {"","","",""}; 
-
-
-
-
-	void function()
-
-}
-
-void function(char* hist1, char* hist2, char* fileName) {
 
 	TFile* fIn = new TFile ("input/fout_corr_pp13TeV.root", "read");
 
