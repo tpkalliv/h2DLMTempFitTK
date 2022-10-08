@@ -75,7 +75,7 @@ dataDetailEta = "$"+hinfo[2]+"$"
 
 
 plot = JPyPlotRatio.JPyPlotRatio(panels=(nrow,ncol),
-	panelsize=(10,10), # change the size
+	panelsize=(12,12), # change the size
 	#rowBounds=ylimits,  # for nrow
 	colBounds=xlimits,  # for ncol
 	panelLabel=plables,  # nrowxncol

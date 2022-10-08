@@ -26,7 +26,6 @@ plabel = ["" for x in range(obsN)]
 for i in range(0,obsN):
 	gr = f.Get("{}".format(obsTypeStr[i]));
 	plabel[i] = "{}".format(gr.GetTitle());
-	print(i)
 	print(plabel[i])		
 
 print(plabel)
@@ -50,7 +49,7 @@ def RemovePoints(arrays, pointIndices):
 ny = 2;
 nx = 2;
 xlimits = [(0,3.)];
-ylimits = [(0,0.05),(0.,0.05)];
+ylimits = [(-0.1,0.1),(-0.15,0.15)];
 
 
 xtitle = ["$pT$"];
@@ -62,12 +61,12 @@ toptitle = "pp $\\sqrt{s}$ = 13 TeV"; # need to add on the top
 
 plot = JPyPlotRatio.JPyPlotRatio(panels=(ny,nx),panelsize=(5,5),
 	disableRatio=[0,1],
-#	rowBounds=ylimits, #only one row, add the shared ylims
+	rowBounds=ylimits, #only one row, add the shared ylims
 	colBounds={0:xlimits[0],1:xlimits[0]}, #two columns, set xlimit for both of them
 	ratioBounds={0:(-1,3),1:(-1,3)},
 	#panelLabel={i:label for i,label in enumerate(plabel)},
 	panelLabelLoc=(0.07,0.88),panelLabelSize=11,
-	panelLabel=plabel,
+	#panelLabel={0: plabel[0], 1:plabel[1]},
 	#panelScaling={3:5},
 	panelLabelAlign="left",
 	systPatchWidth = 0.03,
@@ -104,8 +103,8 @@ f.Close();
 
 
 
-plot.GetPlot().text(0.34,0.75,toptitle,fontsize=9);
-
+plot.GetPlot().text(0.53,0.80,toptitle,fontsize=9);
+#plot.GetPlot().text(0.30,0.75,dataDetail,fontsize=9);
 
 plot.Plot();
 plot.Show();

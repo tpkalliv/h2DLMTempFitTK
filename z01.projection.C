@@ -28,9 +28,14 @@ void projection() {
 	TString outname = "1.output_projections/fout_long_range_correlation_projections_legotrain_EPOSLHC_pp13TeV.root";
 	writeToRoot(outname);
 
+	/* ptt=2, ic=0,4 (LM,HM) 
+	TCanvas *c1 = new TCanvas ("hLM", "hLM", 1);
+	h2D[0][2]->Draw("colz");
+	TCanvas *c2 = new TCanvas ("hHM", "hHM", 1);
+	h2D[4][2]->Draw("colz");
+	*/
 }
 
-// How this function works
 void load2DHistos(TString inputname = "outResults_junlee/h2DCorrelations_merged_legotrain_EPOSLHC_pp13TeV.root"){
 
 	TFile *fIn = new TFile (inputname, "read"); // input file

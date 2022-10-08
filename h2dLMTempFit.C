@@ -172,6 +172,7 @@ void h2dLMTempFitOne(TH1D* hY ,TH1D* hY_MB, int ic, int iptt, int ig) {
 		fitvn_s[n]->Write();
 	}
 	
+	// Writes ig, ic, iptt, vns, vn error to a txt file for z03.makegraphs.C to read
 	TString texttmp = Form("%d %d %d %.5f %.5f %.5f %.5f\n", ig, ic, iptt, vn[0], vnError[0], vn[1], vnError[1]);
 	file << texttmp.Data();
 	file.close();
